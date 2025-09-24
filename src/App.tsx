@@ -22,8 +22,8 @@ gsap.registerPlugin(Observer);
 // --- END: Added Imports for Ballpit Animation ---
 
 // --- ICONS ---
-import { X as CloseIcon, ShoppingCart, Star, Minus, Plus, LogOut, Loader2, Search, Heart, Menu, Mic, Sun, Moon, User, Package, Settings, CheckCircle, XCircle, MoreVertical, Trash2, Edit, MapPin } from "lucide-react";
-
+// --- ICONS ---
+import { X as CloseIcon, ShoppingCart, Star, Minus, Plus, LogOut, Loader2, Search, Heart, Menu, Mic, Sun, Moon, User, Package, Settings, CheckCircle, XCircle, Trash2, Edit, MapPin } from "lucide-react";
 // ======================================================================
 // --- 1. TYPES, CONSTANTS & CONTEXT ---
 // ======================================================================
@@ -1166,7 +1166,6 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const navLinks = ["Catalogue", "Fashion", "Favourite", "Lifestyle"];
-  const navigate = useNavigate();
 
   const [effectiveTheme, setEffectiveTheme] = useState('light');
   useEffect(() => {
