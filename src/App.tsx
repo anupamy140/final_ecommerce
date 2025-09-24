@@ -1,6 +1,6 @@
 import React, { type ElementType, useEffect, useState, useCallback, useRef, createContext, useContext } from "react";
 // --- START: Routing Imports ---
-import { createBrowserRouter, RouterProvider, Link, Outlet, useParams, useNavigate } from "react-router-dom";
+import { createHashRouter, RouterProvider, Link, Outlet, useParams, useNavigate } from "react-router-dom";
 // --- END: Routing Imports ---
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "sonner";
@@ -1902,7 +1902,7 @@ const Layout = () => {
 // ======================================================================
 
 // --- MODIFIED: Added /success and /cancel routes ---
-const router = createBrowserRouter([
+const router = createHashRouter([
     {
         path: "/",
         element: <Layout />,
