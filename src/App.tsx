@@ -1,4 +1,4 @@
-import React, { type ElementType, useEffect, useState, useCallback, useRef, useMemo, createContext, useContext } from "react";
+import React, { type ElementType, useEffect, useState, useCallback, useRef, createContext, useContext } from "react";
 // --- START: Routing Imports ---
 import { createBrowserRouter, RouterProvider, Link, Outlet, useParams, useNavigate } from "react-router-dom";
 // --- END: Routing Imports ---
@@ -22,8 +22,7 @@ gsap.registerPlugin(Observer);
 
 // --- ICONS ---
 // ...
-import { X as CloseIcon, ShoppingCart, Star, Minus, Plus, LogOut, Loader2, ArrowRight, ChevronLeft, ChevronRight, Search, Heart, Menu, Mic, Sun, Moon, User, Package, Settings, CheckCircle, XCircle } from "lucide-react";
-// ...
+import { X as CloseIcon, ShoppingCart, Star, Minus, Plus, LogOut, Loader2, Search, Heart, Menu, Mic, Sun, Moon, User, Package, Settings, CheckCircle, XCircle } from "lucide-react";
 
 // ======================================================================
 // --- 1. TYPES, CONSTANTS & CONTEXT ---
@@ -35,7 +34,7 @@ interface Product {
 interface CartItem {
   product_id: number; title: string; price: number; image: string; quantity: number;
 }
-const API_BASE = "https://backfinal-7pi0.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 // Context for sharing global state and functions
 const AppContext = createContext<any>(null);
@@ -698,8 +697,7 @@ class Y extends MeshPhysicalMaterial {
   };
 
   constructor(params: any) {
-    super(params);
-    this.defines = { USE_UV: '' };
+    super({ ...params, defines: { USE_UV: '' } });
     this.onBeforeCompile = shader => {
       Object.assign(shader.uniforms, this.uniforms);
       shader.fragmentShader =
@@ -1131,7 +1129,7 @@ const Ballpit: React.FC<BallpitProps> = ({ className = '', followCursor = true, 
 
 // ... (Header, Slider, CategoryCarousel, etc. components remain the same)
 const Header = () => {
-  const { user, cart, wishlist, setAuthModalOpen, setCartOpen, setWishlistOpen, setProfileOpen, theme, setTheme } = useApp();
+  const { user, cart, wishlist, setAuthModalOpen, setCartOpen, setWishlistOpen, theme, setTheme } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const navLinks = ["Catalogue", "Fashion", "Favourite", "Lifestyle"];
