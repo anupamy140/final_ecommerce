@@ -1,4 +1,3 @@
-import React from 'react';
 
 const ProductCardSkeleton = () => (
     <div className="bg-gray-100 dark:bg-gray-800/50 rounded-2xl p-4 animate-pulse">

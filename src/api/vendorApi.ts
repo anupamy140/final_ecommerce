@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+
 const API_BASE = import.meta.env.VITE_API_BASE;
 
 const logout = () => {
@@ -9,7 +10,7 @@ const logout = () => {
 };
 
 const vendorApi = {
-    async request(method: string, endpoint: string, body: any = null) {
+    async request(method: string, endpoint: string, body: Record<string, unknown> | null = null) {
         let accessToken = localStorage.getItem("vendorAccessToken");
 
         const makeRequest = async (token: string | null) => {
@@ -42,19 +43,25 @@ const vendorApi = {
 
                 const data = await refreshRes.json();
                 localStorage.setItem("vendorAccessToken", data.access_token);
-                localStorage.setItem("vendorRefreshToken", data.refresh_token);
+                if (data.refresh_token) {
+                    localStorage.setItem("vendorRefreshToken", data.refresh_token);
+                }
                 res = await makeRequest(data.access_token);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 logout();
-                toast.error(error.message);
+                if (error instanceof Error) {
+                    toast.error(error.message);
+                } else {
+                    toast.error("An unknown error occurred during token refresh.");
+                }
                 throw error;
             }
         }
         return res;
     },
     async get(endpoint: string) { return this.request('GET', endpoint); },
-    async post(endpoint: string, body: any) { return this.request('POST', endpoint, body); },
-    async put(endpoint: string, body: any) { return this.request('PUT', endpoint, body); },
+    async post(endpoint: string, body: Record<string, unknown>) { return this.request('POST', endpoint, body); },
+    async put(endpoint: string, body: Record<string, unknown>) { return this.request('PUT', endpoint, body); },
     async delete(endpoint: string) { return this.request('DELETE', endpoint); },
     logout,
 };

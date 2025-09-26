@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useApp } from '../../contexts/AppContext';
 import vendorApi from '../../api/vendorApi';

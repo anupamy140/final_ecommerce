@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Search, Mic } from 'lucide-react';
 
 interface ProductFiltersProps {

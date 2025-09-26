@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { useApp } from '../../contexts/AppContext';
 import api from '../../api/userApi';
-import type { OrderDoc, OrderItem } from '../../types';
+import type { OrderDoc} from '../../types';
 import ImageWithLoader from '../../components/shared/ImageWithLoader';
 import { Loader2 } from 'lucide-react';
 
