@@ -10,6 +10,7 @@ import { Edit, Trash2, Loader2 } from 'lucide-react';
 const AddressManagementPage: React.FC = () => {
     const { addresses, fetchAddresses } = useApp();
     const [loading, setLoading] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null); // To track which address is being deleted
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
@@ -32,7 +33,7 @@ const AddressManagementPage: React.FC = () => {
     const handleDelete = async (addressId: string) => {
         if (!window.confirm("Are you sure you want to delete this address?")) return;
         
-        setLoading(true);
+        setDeletingId(addressId); // Show spinner on the specific address
         try {
             const res = await api.delete(`/users/addresses/${addressId}`);
             if (!res.ok) throw new Error("Failed to delete address");
@@ -41,12 +42,12 @@ const AddressManagementPage: React.FC = () => {
         } catch (error) {
             toast.error("Could not delete address.");
         } finally {
-            setLoading(false);
+            setDeletingId(null); // Hide spinner
         }
     };
     
     const handleSave = async (addressData: Omit<Address, '_id' | 'isDefault'>) => {
-        setLoading(true);
+        setLoading(true); // Disable buttons while saving
         try {
             let res;
             if (editingAddress) {
@@ -61,7 +62,7 @@ const AddressManagementPage: React.FC = () => {
         } catch (error: any) {
             toast.error(error.message);
         } finally {
-            setLoading(false);
+            setLoading(false); // Re-enable buttons
         }
     };
 
@@ -69,7 +70,7 @@ const AddressManagementPage: React.FC = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">My Addresses</h2>
-                <Button onClick={handleAdd}>Add New Address</Button>
+                <Button onClick={handleAdd} disabled={loading}>Add New Address</Button>
             </div>
             {addresses.length === 0 ? (
                 <p className="text-gray-500">You haven't added any addresses yet.</p>
@@ -84,8 +85,12 @@ const AddressManagementPage: React.FC = () => {
                                 {addr.isDefault && <span className="mt-2 inline-block text-xs font-bold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">Default</span>}
                             </div>
                             <div className="flex gap-2">
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(addr)}><Edit size={16}/></Button>
-                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-500" onClick={() => handleDelete(addr._id)}><Trash2 size={16}/></Button>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => handleEdit(addr)} disabled={deletingId === addr._id}>
+                                    <Edit size={16}/>
+                                </Button>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-red-500 hover:text-red-500" onClick={() => handleDelete(addr._id)} disabled={deletingId === addr._id}>
+                                    {deletingId === addr._id ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16}/>}
+                                </Button>
                             </div>
                         </div>
                     ))}

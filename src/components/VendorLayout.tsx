@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import Button from './ui/Button';
-import { Building, ArrowLeft, LayoutDashboard, Package, BarChart2, Settings, LogOut } from 'lucide-react';
+import { Building, ArrowLeft, LayoutDashboard,LogOut } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 const VendorLayout = () => {

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, type ComponentType } from 'react'; // <-- THE FIX IS HERE
+import { Suspense, lazy, type ComponentType } from 'react'; // <-- THE FIX IS HERE
 import { createHashRouter } from 'react-router-dom';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
