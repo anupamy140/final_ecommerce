@@ -1,8 +1,8 @@
-
 import { RouterProvider } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import { Toaster } from 'sonner';
-import router from './Router';
+// FIX: Using lowercase 'r' to match the new filename
+import router from './router';
 
 // --- TypeScript Declaration for Global GSAP ---
 declare global {
