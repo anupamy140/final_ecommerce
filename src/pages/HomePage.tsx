@@ -11,7 +11,7 @@ import Pagination from '../components/shared/Pagination';
 import BrandLogos from '../components/home/BrandLogos';
 import type { Product } from '../types';
 
-const API_BASE = "https://backfinal-7pi0.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const HomePage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);

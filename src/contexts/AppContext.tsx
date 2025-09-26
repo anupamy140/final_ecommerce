@@ -5,7 +5,7 @@ import vendorApi from '../api/vendorApi';
 import { useTheme } from '../hooks/useTheme';
 import type { Product, CartItem, Address, Vendor } from '../types';
 
-const API_BASE = "https://backfinal-7pi0.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 const AppContext = createContext<any>(null);
 
 export const useApp = () => useContext(AppContext);

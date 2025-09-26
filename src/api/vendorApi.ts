@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-const API_BASE = "https://backfinal-7pi0.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const logout = () => {
     localStorage.removeItem("vendorAccessToken");

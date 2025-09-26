@@ -8,7 +8,7 @@ import Button from '../components/ui/Button';
 import ImageZoom from '../components/shared/ImageZoom';
 import ImageWithLoader from '../components/shared/ImageWithLoader';
 
-const API_BASE = "https://backfinal-7pi0.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const ProductDetailPage = () => {
     const { productId } = useParams<{ productId: string }>();
