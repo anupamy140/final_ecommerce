@@ -1,8 +1,13 @@
-// src/components/ui/Sheet.tsx
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export const Sheet = ({ isOpen, onClose, children }: { isOpen: boolean; onClose: () => void; children: React.ReactNode; }) => (
+interface SheetProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}
+
+const Sheet: React.FC<SheetProps> = ({ isOpen, onClose, children }) => (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50">
@@ -14,3 +19,6 @@ export const Sheet = ({ isOpen, onClose, children }: { isOpen: boolean; onClose:
       )}
     </AnimatePresence>
 );
+
+export default Sheet;
+
