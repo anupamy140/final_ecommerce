@@ -5,7 +5,7 @@ import vendorApi from '../../api/vendorApi';
 import type { Product } from '../../types';
 import Button from '../../components/ui/Button';
 import ProductFormModal from '../../components/ProductFormModal';
-import ImageWithLoader from '../../components/shared/ImageWithLoader';
+import {ImageWithLoader} from '../../components/shared/ImageWithLoader';
 import { Edit, Trash2, Loader2 } from 'lucide-react';
 
 const VendorDashboardPage = () => {

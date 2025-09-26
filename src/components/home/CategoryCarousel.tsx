@@ -1,5 +1,7 @@
-import ImageWithLoader from '../shared/ImageWithLoader';
+import {ImageWithLoader} from '../shared/ImageWithLoader';
 
+
+import { optimizeCloudinaryImage } from '../../lib/image';
 
 interface CategoryCarouselProps {
     categories: string[];
@@ -7,9 +9,6 @@ interface CategoryCarouselProps {
     selectedCategory: string | null;
 }
 
-// --- 1. Humne yahan Category aur Cloudinary URL ka map banaya hai ---
-// Key: Category ka naam (jaisa API se aata hai)
-// Value: Uska Cloudinary Image URL
 const categoryImageMap: { [key: string]: string } = {
     'all': 'https://res.cloudinary.com/ddbgvr9al/image/upload/v1758800816/image_xlmev3.jpg',
     'beauty': 'https://res.cloudinary.com/ddbgvr9al/image/upload/v1758800810/Beauty_epa8kg.jpg',
@@ -39,7 +38,6 @@ const categoryImageMap: { [key: string]: string } = {
     'womens-watches': 'https://res.cloudinary.com/ddbgvr9al/image/upload/v1758800860/Womens-Watches_a4thur.jpg',
 };
 
-
 export const CategoryCarousel = ({ categories, onCategorySelect, selectedCategory }: CategoryCarouselProps) => {
     if (!categories || categories.length === 0) return null;
 
@@ -49,25 +47,27 @@ export const CategoryCarousel = ({ categories, onCategorySelect, selectedCategor
             <div className="flex p-4 gap-5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                 <div className="flex gap-5 group mx-auto">
                     
-                    {/* --- All Products Card --- */}
                     <div onClick={() => onCategorySelect("")} className={`flex-shrink-0 w-60 cursor-pointer transition-all duration-500 ease-in-out ${selectedCategory && selectedCategory !== "" ? 'opacity-50 scale-95' : 'opacity-100 scale-100'} group-hover:opacity-100 group-hover:scale-95 hover:!opacity-100 hover:!scale-105 hover:-translate-y-4`}>
                         <div className={`relative h-[28rem] w-full bg-gray-200 overflow-hidden transition-all duration-300 rounded-2xl ${selectedCategory === "" || selectedCategory === null ? 'ring-4 ring-gray-900 dark:ring-yellow-400 ring-offset-4 ring-offset-gray-50 dark:ring-offset-gray-950' : ''}`}>
-                            {/* --- UPDATED: 'all' key se image li gayi hai --- */}
-                            <ImageWithLoader src={categoryImageMap['all']} alt="All Products" className="w-full h-full" />
+                            <ImageWithLoader
+                                src={optimizeCloudinaryImage(categoryImageMap['all'], 400, 600)}
+                                alt="All Products"
+                                className="w-full h-full"
+                                loading="lazy"
+                            />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                             <h3 className="absolute bottom-5 left-5 text-2xl font-bold text-white capitalize">All Products</h3>
                         </div>
                     </div>
 
-                    {/* --- Individual Category Cards --- */}
                     {categories.map((category) => (
                         <div key={category} onClick={() => onCategorySelect(category)} className={`flex-shrink-0 w-60 cursor-pointer transition-all duration-500 ease-in-out ${selectedCategory && selectedCategory !== category ? 'opacity-50 scale-95' : 'opacity-100 scale-100'} group-hover:opacity-100 group-hover:scale-95 hover:!opacity-100 hover:!scale-105 hover:-translate-y-4`}>
                             <div className={`relative h-[28rem] w-full bg-gray-200 overflow-hidden transition-all duration-300 rounded-2xl ${selectedCategory === category ? 'ring-4 ring-gray-900 dark:ring-yellow-400 ring-offset-4 ring-offset-gray-50 dark:ring-offset-gray-950' : ''}`}>
-                                {/* --- UPDATED: Har category ke liye map se image li gayi hai --- */}
                                 <ImageWithLoader
-                                    src={categoryImageMap[category] || `https://placehold.co/400x600/e2e8f0/334155?text=${category}`}
+                                    src={optimizeCloudinaryImage(categoryImageMap[category], 400, 600) || `https://placehold.co/400x600?text=${category}`}
                                     alt={category}
                                     className="w-full h-full"
+                                    loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 <h3 className="absolute bottom-5 left-5 text-2xl font-bold text-white capitalize">{category.replace(/-/g, ' ')}</h3>

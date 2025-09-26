@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../contexts/AppContext';
 import Sheet from './ui/Sheet';
 import Button from './ui/Button';
-import ImageWithLoader from './shared/ImageWithLoader';
+import {ImageWithLoader} from './shared/ImageWithLoader';
 import {  Heart } from 'lucide-react';
 import { X as CloseIcon } from 'lucide-react';
 import type { Product } from '../types';

@@ -1,6 +1,6 @@
 
 import { Outlet } from 'react-router-dom';
-import CartSheet from './CartSheet';
+import {CartSheet} from './CartSheet';
 import WishlistSheet from './WishlistSheet';
 import UserAuthDialog from './UserAuthDialog';
 

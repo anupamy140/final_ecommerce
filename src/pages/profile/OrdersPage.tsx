@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { useApp } from '../../contexts/AppContext';
 import api from '../../api/userApi';
 import type { OrderDoc} from '../../types';
-import ImageWithLoader from '../../components/shared/ImageWithLoader';
+import {ImageWithLoader} from '../../components/shared/ImageWithLoader';
 import { Loader2 } from 'lucide-react';
 
 const OrdersPage: React.FC = () => {

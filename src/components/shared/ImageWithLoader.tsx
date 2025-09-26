@@ -1,39 +1,33 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { cn } from '../../lib/utils';
+
+import { useState } from 'react';
 
 interface ImageWithLoaderProps {
-    src: string;
-    alt: string;
-    className: string;
+  src: string;
+  alt: string;
+  className?: string;
+  loading?: 'lazy' | 'eager';
+  fetchPriority?: 'high' | 'low' | 'auto';
 }
 
-const ImageWithLoader: React.FC<ImageWithLoaderProps> = ({ src, alt, className }) => {
-    const [isLoading, setIsLoading] = useState(true);
+export const ImageWithLoader = ({ src, alt, className, loading, fetchPriority }: ImageWithLoaderProps) => {
+  const [isLoaded, setIsLoaded] = useState(false);
 
-    return (
-        <div className={cn("relative overflow-hidden", className)}>
-            <AnimatePresence>
-                {isLoading && (
-                    <motion.div
-                        initial={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse"
-                    />
-                )}
-            </AnimatePresence>
-            <img
-                src={src}
-                alt={alt}
-                className={cn("w-full h-full object-cover transition-opacity duration-300", isLoading ? 'opacity-0' : 'opacity-100')}
-                onLoad={() => setIsLoading(false)}
-                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                    e.currentTarget.src = `https://placehold.co/600x800/e2e8f0/334155?text=Image+Not+Found`;
-                    setIsLoading(false);
-                }}
-            />
-        </div>
-    );
+  return (
+    <div className={`relative overflow-hidden bg-gray-200 dark:bg-gray-800 ${className}`}>
+      {/* Skeleton loader */}
+      {!isLoaded && (
+        <div className="absolute inset-0 animate-pulse bg-gray-300 dark:bg-gray-700" />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        loading={loading} // <-- FIX: loading prop ko yahan pass kiya gaya
+        fetchPriority={fetchPriority}
+        decoding="async"
+        className={`w-full h-full object-cover transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        onLoad={() => setIsLoaded(true)}
+        onError={(e) => { (e.target as HTMLImageElement).src = `https://placehold.co/600x600?text=Error`; }}
+      />
+    </div>
+  );
 };
-
-export default ImageWithLoader;
