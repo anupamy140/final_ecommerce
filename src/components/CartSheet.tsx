@@ -1,14 +1,18 @@
-
 import { X as CloseIcon, ShoppingCart } from "lucide-react";
 import { useApp } from "../contexts/AppContext";
-import type {CartItem}  from "../types/index";
-import  Sheet  from "../components/ui/Sheet";
-import  Button  from "../components/ui/Button";
+import type {CartItem} from "../types/index";
+import Sheet from "../components/ui/Sheet";
+import Button from "../components/ui/Button";
 import { ImageWithLoader } from "../components/shared/ImageWithLoader";
 import { optimizeCloudinaryImage } from "../lib/image";
 
 export const CartSheet = () => {
-    const { cartOpen, setCartOpen, cart, changeQty, removeFromCart, checkout, formatPrice } = useApp();
+    const { cartOpen, setCartOpen, cart, changeQty, removeFromCart, checkout, formatPrice, selectedAddressId } = useApp();
+    
+    const handleCheckout = () => {
+        checkout(selectedAddressId);
+    }
+
     return (
         <Sheet isOpen={cartOpen} onClose={() => setCartOpen(false)}>
             <div className="flex items-center justify-between p-6 border-b dark:border-gray-800"><h3 className="text-xl font-bold dark:text-white">Shopping Cart</h3><Button variant="ghost" className="h-auto p-2 rounded-full" onClick={() => setCartOpen(false)}><CloseIcon size={20} /></Button></div>
@@ -26,7 +30,7 @@ export const CartSheet = () => {
                         <div className="flex-1"><h4 className="font-semibold dark:text-white">{it.title}</h4><p className="text-sm text-gray-500 dark:text-gray-400">{formatPrice(it.price)}</p><div className="flex items-center gap-2 mt-2"><input type="number" min="1" value={it.quantity} onChange={e => changeQty(it.product_id, Number(e.target.value || 1))} className="w-16 border dark:border-gray-700 bg-transparent rounded-md px-2 py-1 text-center" /><button onClick={() => removeFromCart(it.product_id)} className="text-sm text-red-500 hover:underline">Remove</button></div></div></div>))}
                 </div>
             )}
-            <div className="p-6 border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-950/50"><div className="flex justify-between font-bold text-lg mb-4 dark:text-white"><span>Subtotal</span><span>{formatPrice(cart.reduce((s: number, i: CartItem) => s + i.price * i.quantity, 0))}</span></div><Button onClick={checkout} disabled={cart.length === 0} className="w-full">Proceed to Checkout</Button></div>
+            <div className="p-6 border-t dark:border-gray-800 bg-gray-50 dark:bg-gray-950/50"><div className="flex justify-between font-bold text-lg mb-4 dark:text-white"><span>Subtotal</span><span>{formatPrice(cart.reduce((s: number, i: CartItem) => s + i.price * i.quantity, 0))}</span></div><Button onClick={handleCheckout} disabled={cart.length === 0} className="w-full">Proceed to Checkout</Button></div>
         </Sheet>
     );
 }

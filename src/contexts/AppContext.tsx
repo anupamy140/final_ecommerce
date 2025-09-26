@@ -194,25 +194,34 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error: any) { toast.error(error.message); }
     };
 
-    const checkout = async (addressId: string) => {
-        if (!cart.length) { toast.warning("Cart is empty"); return; }
-        if (!addressId) { toast.error("Please select a shipping address."); return; }
-        try {
-            const res = await api.post('/cart/checkout', {
-                addressId,
-                success_url: 'https://brocode140.netlify.app/#/success',
-                cancel_url: 'https://brocode140.netlify.app/#/cancel'
-            });
-            if (!res.ok) throw new Error((await res.json()).detail || "Checkout failed");
-            const body = await res.json();
-            if (body.url) window.location.href = body.url;
-            else { 
-                toast.success(`Order placed! Total: ${formatPrice(body.total)}`); 
-                fetchCart(); 
-                setCartOpen(false); 
-            }
-        } catch (e: any) { toast.error(e.message); }
-    };
+    const checkout = async () => { // Remove addressId from here
+    if (!cart.length) {
+        toast.warning("Cart is empty");
+        return;
+    }
+    if (!selectedAddressId) { // Use selectedAddressId from context
+        toast.error("Please select a shipping address.");
+        return;
+    }
+    try {
+        const res = await api.post('/cart/checkout', {
+            addressId: selectedAddressId, // And use it here
+            success_url: 'https://brocode140.netlify.app/#/success',
+            cancel_url: 'https://brocode140.netlify.app/#/cancel'
+        });
+        if (!res.ok) throw new Error((await res.json()).detail || "Checkout failed");
+        const body = await res.json();
+        if (body.url) {
+            window.location.href = body.url;
+        } else {
+            toast.success(`Order placed! Total: ${formatPrice(body.total)}`);
+            fetchCart();
+            setCartOpen(false);
+        }
+    } catch (e: any) {
+        toast.error(e.message);
+    }
+};
 
     const toggleWishlist = async (product: Product) => {
         if(!isLoggedIn) { setUserAuthModalOpen(true); return; }
