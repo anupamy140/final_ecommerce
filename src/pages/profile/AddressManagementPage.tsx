@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { useApp } from '../../contexts/AppContext';
 import api from '../../api/userApi';
@@ -7,14 +7,13 @@ import Button from '../../components/ui/Button';
 import AddressFormModal from './AddressFormModal';
 import { Edit, Trash2, Loader2 } from 'lucide-react';
 
-const AddressManagementPage = () => {
+const AddressManagementPage: React.FC = () => {
     const { addresses, fetchAddresses } = useApp();
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
     useEffect(() => {
-        // Initial fetch if addresses aren't loaded
         if (!addresses || addresses.length === 0) {
             fetchAddresses();
         }
@@ -38,7 +37,7 @@ const AddressManagementPage = () => {
             const res = await api.delete(`/users/addresses/${addressId}`);
             if (!res.ok) throw new Error("Failed to delete address");
             toast.success("Address deleted successfully.");
-            fetchAddresses(); // Re-fetch to update the list
+            fetchAddresses();
         } catch (error) {
             toast.error("Could not delete address.");
         } finally {
@@ -72,9 +71,7 @@ const AddressManagementPage = () => {
                 <h2 className="text-2xl font-bold">My Addresses</h2>
                 <Button onClick={handleAdd}>Add New Address</Button>
             </div>
-            {loading && !addresses.length ? (
-                <div className="flex justify-center items-center h-full"><Loader2 className="w-8 h-8 animate-spin" /></div>
-            ) : addresses.length === 0 ? (
+            {addresses.length === 0 ? (
                 <p className="text-gray-500">You haven't added any addresses yet.</p>
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

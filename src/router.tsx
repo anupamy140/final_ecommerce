@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, type ComponentType } from 'react'; // <-- THE FIX IS HERE
 import { createHashRouter } from 'react-router-dom';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
@@ -20,7 +20,7 @@ const OrdersPage = lazy(() => import('./pages/profile/OrdersPage'));
 const AddressManagementPage = lazy(() => import('./pages/profile/AddressManagementPage'));
 const SettingsPage = lazy(() => import('./pages/profile/SettingsPage'));
 
-const withSuspense = (Component: React.ComponentType) => (
+const withSuspense = (Component: ComponentType) => (
   <Suspense fallback={<LoadingSpinner />}>
     <Component />
   </Suspense>

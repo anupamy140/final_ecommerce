@@ -2,14 +2,16 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useDebounce } from '../hooks/useDebounce';
-import {Slider} from '../components/home/Slider';
-import {CategoryCarousel} from '../components/home/CategoryCarousel';
-import {ProductFilters} from '../components/home/ProductFilters';
-import {ProductCard} from '../components/shared/ProductCard';
+import { Slider } from '../components/home/Slider';
+import { CategoryCarousel } from '../components/home/CategoryCarousel';
+import { ProductFilters } from '../components/home/ProductFilters';
+import { ProductCard } from '../components/shared/ProductCard';
 import ProductCardSkeleton from '../components/shared/ProductCardSkeleton';
 import Pagination from '../components/shared/Pagination';
 import BrandLogos from '../components/home/BrandLogos';
 import type { Product } from '../types';
+import { SearchX } from 'lucide-react';
+import Button from '../components/ui/Button';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -116,6 +118,12 @@ const HomePage: React.FC = () => {
         setSelectedCategory(cat => (cat === category ? "" : category));
         document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
     };
+    
+    const clearFilters = () => {
+        setSearch("");
+        setSelectedCategory("");
+        setSort("id");
+    };
 
     return (
         <>
@@ -137,9 +145,13 @@ const HomePage: React.FC = () => {
                         {loading ? (
                             Array.from({ length: 12 }).map((_, i) => <ProductCardSkeleton key={i} />)
                         ) : products.length === 0 ? (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full text-center py-16 bg-white dark:bg-gray-900 rounded-lg mt-8 border dark:border-gray-800">
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full text-center py-16 bg-white dark:bg-gray-900 rounded-lg mt-8 border dark:border-gray-800 flex flex-col items-center">
+                                <SearchX size={64} className="text-gray-300 dark:text-gray-600 mb-4" />
                                 <h3 className="text-xl font-semibold">No Products Found</h3>
                                 <p className="text-gray-500 mt-2">Try adjusting your search or filters.</p>
+                                <Button onClick={clearFilters} variant="outline" className="mt-6">
+                                    Clear Filters
+                                </Button>
                             </motion.div>
                         ) : (
                             products.map(p => (

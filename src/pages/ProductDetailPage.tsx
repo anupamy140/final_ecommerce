@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Loader2, Star, Minus, Plus } from 'lucide-react';
+import { Loader2, Star, Minus, Plus, ShoppingCart, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import type { Product } from '../types/index';
-import  Button  from '../components/ui/Button';
-import  ImageZoom  from '../components/shared/ImageZoom';
+import Button from '../components/ui/Button';
+import ImageZoom from '../components/shared/ImageZoom';
 import { ImageWithLoader } from '../components/shared/ImageWithLoader';
-import { optimizeImage } from '../lib/image'; // <-- 1. Helper ko import karein
+import { optimizeImage } from '../lib/image';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -60,32 +60,48 @@ const ProductDetailPage = () => {
         return <div className="text-center py-20"><h2 className="text-2xl font-bold">Product not found</h2><Button onClick={() => navigate('/')} className="mt-4">Go Home</Button></div>
     }
 
+    const StockIndicator = () => {
+        if (product.stock > 10) {
+            return <div className="flex items-center gap-2 text-green-600 dark:text-green-400"><CheckCircle size={16} /> In Stock</div>;
+        } else if (product.stock > 0) {
+            return <div className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400"><AlertTriangle size={16} /> Low Stock ({product.stock} left)</div>;
+        } else {
+            return <div className="flex items-center gap-2 text-red-600 dark:text-red-400"><AlertTriangle size={16} /> Out of Stock</div>;
+        }
+    };
+
     return (
         <div className="max-w-6xl mx-auto py-12 px-4">
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                {/* --- 2. Main image ko optimize karein aur high priority dein --- */}
                 <ImageZoom src={optimizeImage(product.images?.[0] || product.thumbnail, 800, 800)} alt={product.title} />
                 
                 <div>
                     <span className="text-sm bg-yellow-100 text-yellow-800 font-medium px-2 py-1 rounded capitalize">{product.category.replace(/-/g, ' ')}</span>
                     <h1 className="text-4xl font-bold mt-2 dark:text-white">{product.title}</h1>
                     <p className="text-gray-500 dark:text-gray-400 text-md mt-1">{product.brand}</p>
-                    <div className="flex items-center gap-2 mt-4"><div className="flex items-center gap-1 text-yellow-500">{[...Array(5)].map((_, i) => <Star key={i} size={20} className={i < Math.round(product.rating) ? "fill-current" : "text-gray-300"} />)}</div><span className="text-gray-600 dark:text-gray-300 font-semibold">{product.rating.toFixed(1)}</span></div>
+                    <div className="flex items-center gap-4 mt-4">
+                        <div className="flex items-center gap-1 text-yellow-500">{[...Array(5)].map((_, i) => <Star key={i} size={20} className={i < Math.round(product.rating) ? "fill-current" : "text-gray-300"} />)}</div>
+                        <span className="text-gray-600 dark:text-gray-300 font-semibold">{product.rating.toFixed(1)}</span>
+                        <div className="border-l border-gray-300 dark:border-gray-700 h-5" />
+                        <StockIndicator />
+                    </div>
                     <p className="text-md text-gray-700 dark:text-gray-300 my-6">{product.description}</p>
                     <div className="text-4xl font-bold my-8 dark:text-white">{formatPrice(product.price)}</div>
                     <div className="flex items-center gap-4">
                         <div className="flex items-center border dark:border-gray-700 rounded-lg"><button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 py-2 text-gray-600 dark:text-gray-300"><Minus size={16} /></button><span className="px-4 py-2 font-semibold">{quantity}</span><button onClick={() => setQuantity(q => q + 1)} className="px-3 py-2 text-gray-600 dark:text-gray-300"><Plus size={16} /></button></div>
-                        <Button onClick={() => addToCart(product, quantity)} className="flex-1 h-12" size="lg">Add to Cart</Button>
+                        <Button onClick={() => addToCart(product, quantity)} className="flex-1 h-12" size="lg" disabled={product.stock === 0}>
+                            <ShoppingCart size={20} className="mr-2"/>
+                            {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
+                        </Button>
                     </div>
                 </div>
             </div>
             {related.length > 0 && (
-                <div className="p-6 mt-12 border-t dark:border-gray-800">
-                    <h3 className="font-bold text-2xl mb-6">You Might Also Like</h3>
+                 <div className="mt-16 bg-gray-100/50 dark:bg-gray-900/50 p-8 rounded-2xl">
+                    <h3 className="font-bold text-2xl mb-6 text-center">You Might Also Like</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {related.map(p => (
                             <Link to={`/product/${p.id}`} key={p.id} className="cursor-pointer group">
-                                {/* --- 3. Related images ko optimize aur lazy load karein --- */}
                                 <ImageWithLoader
                                     src={optimizeImage(p.images[0], 300, 300)}
                                     alt={p.title}

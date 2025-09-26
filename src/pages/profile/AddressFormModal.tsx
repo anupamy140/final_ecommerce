@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Dialog from '../../components/ui/Dialog';
 import Button from '../../components/ui/Button';
-import {  Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import type { Address } from '../../types';
 import { X as CloseIcon } from 'lucide-react';
 
 interface AddressFormModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (data: any) => Promise<void>;
+    onSave: (data: Omit<Address, '_id' | 'isDefault'>) => Promise<void>;
     address: Address | null;
 }
 

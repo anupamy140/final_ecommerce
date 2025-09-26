@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../contexts/AppContext';
 import Button from '../../components/ui/Button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Building } from 'lucide-react';
 
 const VendorAuthPage = () => {
     const { handleVendorAuth } = useApp();
@@ -29,29 +29,35 @@ const VendorAuthPage = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950 p-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <Link to="/" className="text-3xl font-bold tracking-wider text-gray-900 dark:text-white">FASHION</Link>
-                    <h2 className="mt-2 text-2xl font-bold text-gray-800 dark:text-gray-200">
+                    <Link to="/" className="inline-flex items-center gap-2 text-3xl font-bold tracking-wider text-gray-900 dark:text-white">
+                        <Building className="h-8 w-8" />
+                        FASHION
+                    </Link>
+                    <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {mode === 'login' ? 'Vendor Portal Login' : 'Vendor Registration'}
                     </h2>
+                     <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        {mode === 'login' ? 'Access your dashboard to manage products.' : 'Create an account to start selling.'}
+                    </p>
                 </div>
                 <div className="bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {mode === 'register' && (
                             <div>
                                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Company Name</label>
-                                <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                                <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-yellow-400 transition-all" />
                             </div>
                         )}
                         <div>
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-yellow-400 transition-all" />
                         </div>
                         <div>
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
-                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="mt-1 w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-yellow-400 transition-all" />
                         </div>
-                        <Button type="submit" disabled={loading} className="w-full">
-                            {loading ? <Loader2 className="animate-spin" /> : (mode === 'login' ? 'Login' : 'Register')}
+                        <Button type="submit" disabled={loading} className="w-full !mt-8" size="lg">
+                            {loading ? <Loader2 className="animate-spin" /> : (mode === 'login' ? 'Login' : 'Create Account')}
                         </Button>
                     </form>
                     <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">

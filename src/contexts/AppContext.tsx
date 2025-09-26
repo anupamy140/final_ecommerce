@@ -21,9 +21,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [wishlistOpen, setWishlistOpen] = useState(false);
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
     const isLoggedIn = !!localStorage.getItem("accessToken");
 
-    const formatPrice = useCallback((p: number = 0) => `$${p.toFixed(2)}`, []);
+    const formatPrice = useCallback((p: number = 0) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+        }).format(p);
+    }, []);
 
     const fetchAddresses = useCallback(async () => {
         if (!isLoggedIn) {
@@ -36,13 +43,33 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             if (!res.ok) throw new Error("Failed to fetch addresses");
             const data = await res.json();
             setAddresses(data);
-            const defaultAddress = data.find((addr: Address) => addr.isDefault) || data[0];
-            setSelectedAddressId(defaultAddress ? defaultAddress._id : null);
+            if (!selectedAddressId || !data.some((addr: Address) => addr._id === selectedAddressId)) {
+                const defaultAddress = data.find((addr: Address) => addr.isDefault) || data[0];
+                setSelectedAddressId(defaultAddress ? defaultAddress._id : null);
+            }
         } catch (error) {
             console.error(error);
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, selectedAddressId]);
 
+    const saveAddress = async (addressData: Omit<Address, '_id' | 'isDefault'>) => {
+        try {
+            let res;
+            if (editingAddress) {
+                res = await api.put(`/users/addresses/${editingAddress._id}`, addressData);
+            } else {
+                res = await api.post('/users/addresses', addressData);
+            }
+            if (!res.ok) throw new Error((await res.json()).detail || 'Failed to save address');
+            toast.success(`Address ${editingAddress ? 'updated' : 'added'} successfully.`);
+            setIsAddressModalOpen(false);
+            setEditingAddress(null);
+            await fetchAddresses(); // Re-fetch to update lists everywhere
+        } catch (error: any) {
+            toast.error(error.message);
+        }
+    };
+    
     const fetchCart = useCallback(async () => {
         if (!isLoggedIn) {
             setCart([]);
@@ -194,34 +221,35 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (error: any) { toast.error(error.message); }
     };
 
-    const checkout = async () => { // Remove addressId from here
-    if (!cart.length) {
-        toast.warning("Cart is empty");
-        return;
-    }
-    if (!selectedAddressId) { // Use selectedAddressId from context
-        toast.error("Please select a shipping address.");
-        return;
-    }
-    try {
-        const res = await api.post('/cart/checkout', {
-            addressId: selectedAddressId, // And use it here
-            success_url: 'https://brocode140.netlify.app/#/success',
-            cancel_url: 'https://brocode140.netlify.app/#/cancel'
-        });
-        if (!res.ok) throw new Error((await res.json()).detail || "Checkout failed");
-        const body = await res.json();
-        if (body.url) {
-            window.location.href = body.url;
-        } else {
-            toast.success(`Order placed! Total: ${formatPrice(body.total)}`);
-            fetchCart();
-            setCartOpen(false);
+    const checkout = async () => {
+        if (!cart.length) {
+            toast.warning("Cart is empty");
+            return;
         }
-    } catch (e: any) {
-        toast.error(e.message);
-    }
-};
+        if (!selectedAddressId) {
+            toast.error("Please select a shipping address.");
+            return;
+        }
+        try {
+            const res = await api.post('/cart/checkout', {
+                addressId: selectedAddressId,
+                currency: 'inr', // Specify currency for Stripe
+                success_url: 'https://brocode140.netlify.app/#/success',
+                cancel_url: 'https://brocode140.netlify.app/#/cancel'
+            });
+            if (!res.ok) throw new Error((await res.json()).detail || "Checkout failed");
+            const body = await res.json();
+            if (body.url) {
+                window.location.href = body.url;
+            } else {
+                toast.success(`Order placed! Total: ${formatPrice(body.total)}`);
+                fetchCart();
+                setCartOpen(false);
+            }
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    };
 
     const toggleWishlist = async (product: Product) => {
         if(!isLoggedIn) { setUserAuthModalOpen(true); return; }
@@ -240,7 +268,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         setUserAuthModalOpen, cartOpen, setCartOpen, wishlistOpen, setWishlistOpen,
         isLoggedIn, formatPrice, fetchCart, fetchWishlist, addToCart, changeQty,
         removeFromCart, checkout, toggleWishlist, handleAuth, handleVendorAuth,
-        vendorLogout, addresses, fetchAddresses, selectedAddressId, setSelectedAddressId
+        vendorLogout, addresses, fetchAddresses, selectedAddressId, setSelectedAddressId,
+        isAddressModalOpen, setIsAddressModalOpen, editingAddress, setEditingAddress, saveAddress
     };
 
     return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;

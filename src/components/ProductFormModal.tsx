@@ -4,12 +4,14 @@ import Button from './ui/Button';
 import { Loader2, Trash2 } from 'lucide-react';
 import type { Product } from '../types';
 import { X as CloseIcon } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
+
 
 interface ProductFormModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (data: Partial<Product>) => void;
-    product: Product | null; // Null for adding a new product
+    product: Product | null;
 }
 
 const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, onSave, product }) => {
@@ -17,17 +19,9 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, on
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        // Populate form when a product is passed for editing, otherwise reset for a new product
         setFormData(product ? { ...product } : {
-            title: '',
-            description: '',
-            category: '',
-            price: 0,
-            stock: 0,
-            sku: '',
-            brand: '',
-            images: [''],
-            thumbnail: ''
+            title: '', description: '', category: '', price: 0, stock: 0, sku: '', brand: '',
+            images: [''], thumbnail: ''
         });
     }, [product, isOpen]);
 
@@ -35,6 +29,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, on
         const { name, value } = e.target;
         const isNumericField = ['price', 'stock'].includes(name);
         setFormData(prev => ({ ...prev, [name]: isNumericField ? Number(value) : value }));
+    };
+    
+    const handleNumericChange = (field: 'price' | 'stock', amount: number) => {
+        setFormData(prev => ({
+            ...prev,
+            [field]: Math.max(0, (prev[field] || 0) + amount)
+        }));
     };
 
     const handleImageChange = (index: number, value: string) => {
@@ -58,7 +59,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, on
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        // Ensure the thumbnail is set to the first image if it exists
         const submissionData = { ...formData, thumbnail: formData.images?.[0] || '' };
         await onSave(submissionData);
         setLoading(false);
@@ -72,23 +72,55 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, on
                     <Button variant="ghost" className="h-auto p-2 rounded-full" onClick={onClose}><CloseIcon size={20}/></Button>
                 </div>
                 <form onSubmit={handleSubmit}>
-                    <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                        {/* Fields for adding a new product (disabled on edit) */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input name="title" value={formData.title || ''} onChange={handleChange} placeholder="Product Title" required disabled={!!product} className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2 disabled:opacity-50" />
-                            <input name="brand" value={formData.brand || ''} onChange={handleChange} placeholder="Brand" required disabled={!!product} className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2 disabled:opacity-50" />
+                    <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                        {!product && (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Product Title</label>
+                                        <input name="title" value={formData.title || ''} onChange={handleChange} placeholder="e.g. Modern Sofa" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Brand</label>
+                                        <input name="brand" value={formData.brand || ''} onChange={handleChange} placeholder="e.g. Acme Furniture" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Description</label>
+                                    <textarea name="description" value={formData.description || ''} onChange={handleChange} placeholder="A short description of the product..." required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5 min-h-[120px]" />
+                                </div>
+                            </>
+                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div>
+                               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Price</label>
+                               <div className="flex items-center border dark:border-gray-700 rounded-lg">
+                                    <button type="button" onClick={() => handleNumericChange('price', -10)} className="px-3 py-2.5 text-gray-600 dark:text-gray-300"><Minus size={16} /></button>
+                                    <input name="price" type="number" step="0.01" value={formData.price || 0} onChange={handleChange} required className="w-full bg-transparent text-center font-semibold outline-none" />
+                                    <button type="button" onClick={() => handleNumericChange('price', 10)} className="px-3 py-2.5 text-gray-600 dark:text-gray-300"><Plus size={16} /></button>
+                               </div>
+                            </div>
+                             <div>
+                               <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Stock</label>
+                               <div className="flex items-center border dark:border-gray-700 rounded-lg">
+                                    <button type="button" onClick={() => handleNumericChange('stock', -1)} className="px-3 py-2.5 text-gray-600 dark:text-gray-300"><Minus size={16} /></button>
+                                    <input name="stock" type="number" value={formData.stock || 0} onChange={handleChange} required className="w-full bg-transparent text-center font-semibold outline-none" />
+                                    <button type="button" onClick={() => handleNumericChange('stock', 1)} className="px-3 py-2.5 text-gray-600 dark:text-gray-300"><Plus size={16} /></button>
+                               </div>
+                            </div>
+                            {!product && (
+                                <>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Category</label>
+                                    <input name="category" value={formData.category || ''} onChange={handleChange} placeholder="e.g. furniture" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                                </div>
+                                <div>
+                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">SKU</label>
+                                    <input name="sku" value={formData.sku || ''} onChange={handleChange} placeholder="e.g. ACME-123" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2.5" />
+                                </div>
+                                </>
+                            )}
                         </div>
-                        <textarea name="description" value={formData.description || ''} onChange={handleChange} placeholder="Description" required disabled={!!product} className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2 min-h-[100px] disabled:opacity-50" />
-
-                        {/* Fields for both adding and editing */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <input name="price" type="number" step="0.01" value={formData.price || 0} onChange={handleChange} placeholder="Price" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2" />
-                            <input name="stock" type="number" value={formData.stock || 0} onChange={handleChange} placeholder="Stock" required className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2" />
-                            <input name="category" value={formData.category || ''} onChange={handleChange} placeholder="Category" required disabled={!!product} className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2 disabled:opacity-50" />
-                            <input name="sku" value={formData.sku || ''} onChange={handleChange} placeholder="SKU" required disabled={!!product} className="w-full border dark:border-gray-700 bg-transparent rounded-lg px-4 py-2 disabled:opacity-50" />
-                        </div>
-
-                        {/* Image fields only for new products */}
                         {!product && (
                              <div>
                                 <h4 className="text-sm font-semibold mb-2">Image URLs</h4>
@@ -110,6 +142,6 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ isOpen, onClose, on
             </div>
         </Dialog>
     );
-};
+}
 
 export default ProductFormModal;
