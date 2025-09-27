@@ -8,13 +8,21 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          // Create a separate chunk for the three.js library
-          if (id.includes('three')) {
-            return 'three';
-          }
-          // Create a separate chunk for the gsap library
-          if (id.includes('gsap')) {
-            return 'gsap';
+          // This refined strategy splits the largest libraries into their own chunks
+          // to ensure the initial download is as small as possible.
+          if (id.includes('node_modules')) {
+            if (id.includes('three')) {
+              return 'vendor-three'; // Isolate the huge three.js library
+            }
+            if (id.includes('framer-motion')) {
+              return 'vendor-framer';
+            }
+            if (id.includes('react-router-dom') || id.includes('react-router')) {
+              return 'vendor-router';
+            }
+            if (id.includes('react-dom') || id.includes('react')) {
+              return 'vendor-react';
+            }
           }
         },
       },

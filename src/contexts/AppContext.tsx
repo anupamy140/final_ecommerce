@@ -8,6 +8,13 @@ import type { Product, CartItem, Address, Vendor } from '../types';
 const API_BASE = import.meta.env.VITE_API_BASE;
 const AppContext = createContext<any>(null);
 
+// Add this global declaration once in your project, for example at the top of this file
+declare global {
+  interface Window {
+    finalizedToasts: Set<number | string>;
+  }
+}
+
 export const useApp = () => useContext(AppContext);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
@@ -21,9 +28,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const [wishlistOpen, setWishlistOpen] = useState(false);
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-    const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-    const isLoggedIn = !!localStorage.getItem("accessToken");
+    const [authLoading, setAuthLoading] = useState(true); // Fixes the refresh issue
 
     const formatPrice = useCallback((p: number = 0) => {
         return new Intl.NumberFormat('en-IN', {
@@ -33,7 +38,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const fetchAddresses = useCallback(async () => {
-        if (!isLoggedIn) {
+        if (!localStorage.getItem("accessToken")) {
             setAddresses([]);
             setSelectedAddressId(null);
             return;
@@ -43,35 +48,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             if (!res.ok) throw new Error("Failed to fetch addresses");
             const data = await res.json();
             setAddresses(data);
-            if (!selectedAddressId || !data.some((addr: Address) => addr._id === selectedAddressId)) {
-                const defaultAddress = data.find((addr: Address) => addr.isDefault) || data[0];
-                setSelectedAddressId(defaultAddress ? defaultAddress._id : null);
-            }
+            const defaultAddress = data.find((addr: Address) => addr.isDefault) || data[0];
+            setSelectedAddressId(defaultAddress ? defaultAddress._id : null);
         } catch (error) {
             console.error(error);
         }
-    }, [isLoggedIn, selectedAddressId]);
+    }, []);
 
-    const saveAddress = async (addressData: Omit<Address, '_id' | 'isDefault'>) => {
-        try {
-            let res;
-            if (editingAddress) {
-                res = await api.put(`/users/addresses/${editingAddress._id}`, addressData);
-            } else {
-                res = await api.post('/users/addresses', addressData);
-            }
-            if (!res.ok) throw new Error((await res.json()).detail || 'Failed to save address');
-            toast.success(`Address ${editingAddress ? 'updated' : 'added'} successfully.`);
-            setIsAddressModalOpen(false);
-            setEditingAddress(null);
-            await fetchAddresses(); // Re-fetch to update lists everywhere
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
-    
     const fetchCart = useCallback(async () => {
-        if (!isLoggedIn) {
+        if (!localStorage.getItem("accessToken")) {
             setCart([]);
             return;
         }
@@ -95,10 +80,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (e) {
             console.error(e);
         }
-    }, [isLoggedIn]);
+    }, []);
 
     const fetchWishlist = useCallback(async () => {
-        if (!isLoggedIn) {
+        if (!localStorage.getItem("accessToken")) {
             setWishlist([]);
             return;
         }
@@ -110,9 +95,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (e) {
             console.error(e);
         }
-    }, [isLoggedIn]);
+    }, []);
 
     useEffect(() => {
+        const initAuth = async () => {
+            setAuthLoading(true);
+            setUser(localStorage.getItem("user"));
+            const storedVendor = localStorage.getItem("vendor");
+            setVendor(storedVendor ? JSON.parse(storedVendor) : null);
+            await Promise.all([fetchCart(), fetchWishlist(), fetchAddresses()]);
+            setAuthLoading(false);
+        };
+        
+        initAuth();
+
         const handleAuthChange = () => {
             setUser(localStorage.getItem("user"));
             fetchCart();
@@ -126,7 +122,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
         window.addEventListener("authChange", handleAuthChange);
         window.addEventListener("vendorAuthChange", handleVendorAuthChange);
-        handleAuthChange();
 
         return () => {
             window.removeEventListener("authChange", handleAuthChange);
@@ -193,14 +188,46 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
     const addToCart = async (product: Product, quantity = 1) => {
         if (product.stock <= 0) { toast.error("Out of stock"); return; }
-        if (!isLoggedIn) { setUserAuthModalOpen(true); return; }
+        if (!localStorage.getItem("accessToken")) { setUserAuthModalOpen(true); return; }
+        
+        const originalCart = [...cart];
+        
+        const existingItem = cart.find(item => item.product_id === product.id);
+        if (existingItem) {
+            setCart(cart.map(item => item.product_id === product.id ? { ...item, quantity: item.quantity + quantity } : item));
+        } else {
+            setCart([...cart, { product_id: product.id, title: product.title, price: product.price, image: product.thumbnail, quantity }]);
+        }
+
+        toast.success(`${product.title} added to cart!`, {
+            action: {
+                label: 'Undo',
+                onClick: () => {
+                    setCart(originalCart); 
+                },
+            },
+            onAutoClose: (t) => finalizeAddToCart(t.id, product.id, quantity, originalCart),
+            onDismiss: (t) => finalizeAddToCart(t.id, product.id, quantity, originalCart),
+        });
+    };
+
+    const finalizeAddToCart = async (toastId: number | string, productId: number, quantity: number, originalCart: CartItem[]) => {
+        if (window.finalizedToasts?.has(toastId)) return;
+        window.finalizedToasts = window.finalizedToasts || new Set();
+        window.finalizedToasts.add(toastId);
+
         try {
-            const res = await api.post('/cart/add', { product_id: product.id, quantity });
-            if(!res.ok) throw new Error((await res.json()).detail || "Failed to add item");
+            const res = await api.post('/cart/add', { product_id: productId, quantity });
+            if (!res.ok) {
+                setCart(originalCart);
+                throw new Error((await res.json()).detail || "Failed to add item");
+            }
             await fetchCart();
-            toast.success(`${product.title} added to cart!`);
             setCartOpen(true);
-        } catch (error: any) { toast.error(error.message); }
+        } catch (error: any) {
+            toast.error(error.message);
+            setCart(originalCart);
+        }
     };
 
     const changeQty = async (product_id: number, qty: number) => {
@@ -233,7 +260,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const res = await api.post('/cart/checkout', {
                 addressId: selectedAddressId,
-                currency: 'inr', // Specify currency for Stripe
+                currency: 'inr',
                 success_url: 'https://brocode140.netlify.app/#/success',
                 cancel_url: 'https://brocode140.netlify.app/#/cancel'
             });
@@ -252,7 +279,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const toggleWishlist = async (product: Product) => {
-        if(!isLoggedIn) { setUserAuthModalOpen(true); return; }
+        if(!localStorage.getItem("accessToken")) { setUserAuthModalOpen(true); return; }
         const isInWishlist = wishlist.some((item: Product) => item.id === product.id);
         try {
             const res = await api.post(isInWishlist ? '/wishlist/remove' : '/wishlist/add', { product_id: product.id });
@@ -266,10 +293,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         theme, setTheme,
         user, vendor, cart, wishlist, userAuthModalOpen,
         setUserAuthModalOpen, cartOpen, setCartOpen, wishlistOpen, setWishlistOpen,
-        isLoggedIn, formatPrice, fetchCart, fetchWishlist, addToCart, changeQty,
+        formatPrice, fetchCart, fetchWishlist, addToCart, changeQty,
         removeFromCart, checkout, toggleWishlist, handleAuth, handleVendorAuth,
         vendorLogout, addresses, fetchAddresses, selectedAddressId, setSelectedAddressId,
-        isAddressModalOpen, setIsAddressModalOpen, editingAddress, setEditingAddress, saveAddress
+        authLoading
     };
 
     return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;

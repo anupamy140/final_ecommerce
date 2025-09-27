@@ -28,20 +28,22 @@ const Header = () => {
                         </Link>
                     </nav>
                     <div className="flex items-center space-x-1">
-                        <Button onClick={toggleTheme} variant="ghost" className="relative p-2 h-auto rounded-full">
+                        <Button onClick={toggleTheme} variant="ghost" className="relative p-2 h-auto rounded-full" aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}>
                             {theme === 'dark' ? <Sun/> : <Moon/>}
                         </Button>
-                        <Button onClick={() => setWishlistOpen(true)} variant="ghost" className="relative p-2 h-auto rounded-full">
+                        <Button onClick={() => setWishlistOpen(true)} variant="ghost" className="relative p-2 h-auto rounded-full" aria-label="Open wishlist">
                             <Heart />
                             {wishlist.length > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-black text-xs font-bold text-center leading-5">{wishlist.length}</span>}
                         </Button>
-                        <Button onClick={() => setCartOpen(true)} variant="ghost" className="relative p-2 h-auto rounded-full">
+                        <Button onClick={() => setCartOpen(true)} variant="ghost" className="relative p-2 h-auto rounded-full" aria-label="Open cart">
                             <ShoppingCart />
                             {cart.length > 0 && <span className="absolute top-0 right-0 block h-5 w-5 rounded-full bg-yellow-400 text-black text-xs font-bold text-center leading-5">{cart.length}</span>}
                         </Button>
                         {user ? (
                             <div className="relative">
-                                <button onClick={() => setProfileDropdownOpen(o => !o)} className="w-10 h-10 ml-2 flex items-center justify-center bg-gray-900 dark:bg-gray-50 text-white dark:text-gray-900 font-bold rounded-full text-lg">{user.trim().charAt(0).toUpperCase()}</button>
+                                <button onClick={() => setProfileDropdownOpen(o => !o)} className="w-10 h-10 ml-2 flex items-center justify-center bg-gray-900 dark:bg-gray-50 text-white dark:text-gray-900 font-bold rounded-full text-lg" aria-label="Open user menu">
+                                    {user.trim().charAt(0).toUpperCase()}
+                                </button>
                                 <AnimatePresence>
                                 {profileDropdownOpen && (
                                     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg shadow-lg p-1.5">
@@ -55,7 +57,7 @@ const Header = () => {
                                 </AnimatePresence>
                             </div>
                         ) : (<Button onClick={() => setUserAuthModalOpen(true)} className="hidden md:block ml-2">Login / Sign Up</Button>)}
-                        <button className="md:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}><Menu /></button>
+                        <button className="md:hidden p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Open main menu"><Menu /></button>
                     </div>
                 </div>
             </div>
