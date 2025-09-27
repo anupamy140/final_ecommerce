@@ -1,18 +1,23 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+/// <reference types="vitest" />
+import { defineConfig } from 'vitest/config'; // FIX: Import from 'vitest/config'
+import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  test: { // TypeScript will now recognize the 'test' property
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
+    css: false, 
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          // This refined strategy splits the largest libraries into their own chunks
-          // to ensure the initial download is as small as possible.
           if (id.includes('node_modules')) {
             if (id.includes('three')) {
-              return 'vendor-three'; // Isolate the huge three.js library
+              return 'vendor-three';
             }
             if (id.includes('framer-motion')) {
               return 'vendor-framer';
@@ -28,4 +33,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

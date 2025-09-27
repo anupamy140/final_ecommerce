@@ -6,7 +6,7 @@ import { useTheme } from '../hooks/useTheme';
 import type { Product, CartItem, Address, Vendor } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
-const AppContext = createContext<any>(null);
+export const AppContext = createContext<any>(null);
 
 // Add this global declaration once in your project, for example at the top of this file
 declare global {
