@@ -34,8 +34,6 @@ export const Slider = () => {
                 {slides.map((slide, index) => (
                     <div key={slide.id} className={`${slide.bg} flex-shrink-0 w-full h-full flex flex-col md:flex-row text-gray-800`}>
                         <div className="w-full md:w-1/2 h-full flex flex-col items-center justify-center gap-4 text-center p-4">
-
-                            {/* FIX: This wrapper reserves vertical space for the text, preventing the button from moving. */}
                             <div className="h-40 md:h-32 flex items-center justify-center">
                                 {current === index && (
                                     <TextType
@@ -46,7 +44,6 @@ export const Slider = () => {
                                     />
                                 )}
                             </div>
-
                             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}>
                                 <button onClick={handleShopNowClick} className="rounded-md bg-black text-white py-3 px-6 font-semibold hover:bg-gray-800 transition-colors">
                                     SHOP NOW
@@ -54,7 +51,13 @@ export const Slider = () => {
                             </motion.div>
                         </div>
                         <div className="w-full md:w-1/2 h-full relative">
-                           <ImageWithLoader src={slide.img} alt={slide.title} className="w-full h-full" />
+                           <ImageWithLoader 
+                                src={slide.img} 
+                                alt={slide.title} 
+                                className="w-full h-full"
+                                loading={index === 0 ? 'eager' : 'lazy'}
+                                fetchPriority={index === 0 ? 'high' : 'auto'}
+                            />
                         </div>
                     </div>
                 ))}
