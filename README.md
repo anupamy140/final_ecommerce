@@ -1,7 +1,7 @@
 Absolutely bro! Here's your complete `README.md` content in one clean block so you can copy it easily:
 
 ```markdown
-# FASHION - E-Commerce Frontend
+# BROMART - E-Commerce Frontend
 
 A modern e-commerce frontend built with **React**, **TypeScript**, and **Vite**, designed to deliver a seamless shopping experience for customers and vendors. This project includes product browsing, user authentication, cart management, and vendor dashboards.
 

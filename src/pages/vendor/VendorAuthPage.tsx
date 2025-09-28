@@ -31,7 +31,7 @@ const VendorAuthPage = () => {
                 <div className="text-center mb-8">
                     <Link to="/" className="inline-flex items-center gap-2 text-3xl font-bold tracking-wider text-gray-900 dark:text-white">
                         <Building className="h-8 w-8" />
-                        FASHION
+                        BROMART
                     </Link>
                     <h2 className="mt-4 text-2xl font-bold text-gray-800 dark:text-gray-200">
                         {mode === 'login' ? 'Vendor Portal Login' : 'Vendor Registration'}
