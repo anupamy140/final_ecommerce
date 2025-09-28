@@ -22,7 +22,7 @@ final_ecommerce
 ├── src/  
 │   ├── api/             # API request handlers (userApi.ts, vendorApi.ts)  
 │   ├── components/      # Reusable UI components  
-│   │   ├── home/        # Components specific to the HomePage
+│   │   ├── home/        # Components specific to the HomePage  
 │   │   ├── shared/      # Components used across multiple pages (ProductCard, Pagination)  
 │   │   └── ui/          # Generic UI elements (Button, Dialog, Sheet)  
 │   ├── contexts/        # React context for global state (AppContext.tsx)  
