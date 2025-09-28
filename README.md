@@ -18,28 +18,28 @@ A modern e-commerce frontend built with **React**, **TypeScript**, and **Vite**,
 
 ```
 final_ecommerce
-├── public/              # Static assets  
+├── public/              # Static assets like images and fonts  
 ├── src/  
-│   ├── api/             # API handlers  
-│   ├── components/      # UI components  
-│   │   ├── home/        # Homepage-specific components  
-│   │   ├── shared/      # Reusable components (ProductCard, Pagination)  
-│   │   └── ui/          # Generic UI elements (Button, Dialog)  
-│   ├── contexts/        # Global state management  
-│   ├── hooks/           # Custom React hooks  
-│   ├── lib/             # Utility functions  
-│   ├── pages/           # Route-based pages  
-│   │   ├── profile/     # Customer profile pages  
-│   │   └── vendor/      # Vendor dashboard and auth  
-│   ├── router.tsx       # Routing configuration  
-│   ├── types/           # TypeScript types  
-│   ├── App.tsx          # Root component  
-│   └── main.tsx         # Entry point  
-├── .gitignore  
-├── index.html  
-├── package.json  
-├── tailwind.config.js  
-└── tsconfig.json  
+│   ├── api/             # API request handlers (userApi.ts, vendorApi.ts)  
+│   ├── components/      # Reusable UI components  
+│   │   ├── home/        # Components specific to the HomePage
+│   │   ├── shared/      # Components used across multiple pages (ProductCard, Pagination)  
+│   │   └── ui/          # Generic UI elements (Button, Dialog, Sheet)  
+│   ├── contexts/        # React context for global state (AppContext.tsx)  
+│   ├── hooks/           # Custom React hooks (useTheme, useDebounce)  
+│   ├── lib/             # Utility functions (utils.ts, image.ts)  
+│   ├── pages/           # Page components for each route  
+│   │   ├── profile/     # Customer profile pages (Orders, Addresses)  
+│   │   └── vendor/      # Vendor-specific pages (Auth, Dashboard)  
+│   ├── router.tsx       # Application routing configuration  
+│   ├── types/           # TypeScript type definitions  
+│   ├── App.tsx          # Main application component  
+│   └── main.tsx         # Application entry point  
+├── .gitignore           # Files to ignore in version control  
+├── index.html           # Main HTML file  
+├── package.json         # NPM project configuration  
+├── tailwind.config.js   # Tailwind CSS configuration  
+└── tsconfig.json        # TypeScript configuration  
 ```
 
 ## ⚙️ Setup Instructions
@@ -62,7 +62,7 @@ final_ecommerce
    Create a `.env` file in the root directory:
 
    ```
-   VITE_API_BASE=http://localhost:3000
+   VITE_API_BASE=http://localhost:8000
    ```
 
 4. **Start the development server:**
