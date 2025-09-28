@@ -3,7 +3,7 @@ const logos = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/H%26M-Logo.svg/1280px-H%26M-Logo.svg.png",
     "https://upload.wikimedia.org/wikipedia/commons/a/a6/Calvin_klein_logo_web23.svg",
     "https://upload.wikimedia.org/wikipedia/commons/0/00/Samsung_Orig_Wordmark_BLACK_RGB.png",
-    "https://upload.wikimedia.org/wikipedia/commons/0/02/Levi%27s_logo_%282011%29.svg",
+    "https://upload.wikimedia.org/wikipedia/commons/f/f2/Nike_logo_1978.svg",
     "https://upload.wikimedia.org/wikipedia/commons/c/c5/Gucci_logo.svg"
 ];
 
