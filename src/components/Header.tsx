@@ -20,7 +20,7 @@ const Header = () => {
         <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
-                    <Link to="/" className="text-2xl font-bold tracking-wider text-gray-900 dark:text-white">FASHION</Link>
+                    <Link to="/" className="text-2xl font-bold tracking-wider text-gray-900 dark:text-white">😎BROMART😎 </Link>
                     <nav className="hidden md:flex items-center space-x-8">
                         {navLinks.map(link => (<a key={link} href="#" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{link}</a>))}
                         <Link to="/vendor/auth" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
