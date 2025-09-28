@@ -18,28 +18,28 @@ A modern e-commerce frontend built with **React**, **TypeScript**, and **Vite**,
 
 ```
 final_ecommerce
-├── public/              # Static assets
-├── src/
-│   ├── api/             # API handlers
-│   ├── components/      # UI components
-│   │   ├── home/        # Homepage-specific components
-│   │   ├── shared/      # Reusable components (ProductCard, Pagination)
-│   │   └── ui/          # Generic UI elements (Button, Dialog)
-│   ├── contexts/        # Global state management
-│   ├── hooks/           # Custom React hooks
-│   ├── lib/             # Utility functions
-│   ├── pages/           # Route-based pages
-│   │   ├── profile/     # Customer profile pages
-│   │   └── vendor/      # Vendor dashboard and auth
-│   ├── router.tsx       # Routing configuration
-│   ├── types/           # TypeScript types
-│   ├── App.tsx          # Root component
-│   └── main.tsx         # Entry point
-├── .gitignore
-├── index.html
-├── package.json
-├── tailwind.config.js
-└── tsconfig.json
+├── public/              # Static assets  
+├── src/  
+│   ├── api/             # API handlers  
+│   ├── components/      # UI components  
+│   │   ├── home/        # Homepage-specific components  
+│   │   ├── shared/      # Reusable components (ProductCard, Pagination)  
+│   │   └── ui/          # Generic UI elements (Button, Dialog)  
+│   ├── contexts/        # Global state management  
+│   ├── hooks/           # Custom React hooks  
+│   ├── lib/             # Utility functions  
+│   ├── pages/           # Route-based pages  
+│   │   ├── profile/     # Customer profile pages  
+│   │   └── vendor/      # Vendor dashboard and auth  
+│   ├── router.tsx       # Routing configuration  
+│   ├── types/           # TypeScript types  
+│   ├── App.tsx          # Root component  
+│   └── main.tsx         # Entry point  
+├── .gitignore  
+├── index.html  
+├── package.json  
+├── tailwind.config.js  
+└── tsconfig.json  
 ```
 
 ## ⚙️ Setup Instructions
@@ -62,7 +62,7 @@ final_ecommerce
    Create a `.env` file in the root directory:
 
    ```
-   VITE_API_BASE=http://localhost:8000
+   VITE_API_BASE=http://localhost:3000
    ```
 
 4. **Start the development server:**
@@ -87,4 +87,3 @@ npm run build
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
 ```
 
-Let me know if you want to add screenshots, badges, or backend setup next. I got you!
