@@ -12,9 +12,9 @@ import BrandLogos from '../components/home/BrandLogos';
 import type { Product } from '../types';
 import { SearchX } from 'lucide-react';
 import Button from '../components/ui/Button';
-
+ 
 const API_BASE = import.meta.env.VITE_API_BASE;
-
+ 
 const HomePage: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [page, setPage] = useState(1);
@@ -24,17 +24,22 @@ const HomePage: React.FC = () => {
     const [selectedCategory, setSelectedCategory] = useState("");
     const [sort, setSort] = useState("id");
     const [search, setSearch] = useState("");
+    const [searchSource, setSearchSource] = useState<'text' | 'voice'>('text');
     const debouncedSearch = useDebounce(search, 500);
     const recognitionRef = useRef<any>(null);
     const [micSupported, setMicSupported] = useState(false);
     const [listening, setListening] = useState(false);
-
+ 
     const loadProducts = useCallback(async () => {
         setLoading(true);
         try {
             let url: string;
             if (debouncedSearch) {
-                url = `${API_BASE}/products/search?search_str=${encodeURIComponent(debouncedSearch)}&page=${page}&limit=12`;
+                if (searchSource === 'voice') {
+                    url = `${API_BASE}/products/search?search_str=${encodeURIComponent(debouncedSearch)}&page=${page}&limit=12`;
+                } else {
+                    url = `${API_BASE}/products/normal-search?search_str=${encodeURIComponent(debouncedSearch)}&page=${page}&limit=12`;
+                }
             } else {
                 const q = new URLSearchParams({ page: String(page), limit: String(12), sort });
                 if (selectedCategory) q.set("category", selectedCategory);
@@ -50,8 +55,8 @@ const HomePage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [page, selectedCategory, sort, debouncedSearch]);
-
+    }, [page, selectedCategory, sort, debouncedSearch, searchSource]);
+ 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -65,15 +70,15 @@ const HomePage: React.FC = () => {
         };
         fetchCategories();
     }, []);
-
+ 
     useEffect(() => {
         loadProducts();
     }, [loadProducts]);
-
+ 
     useEffect(() => {
         setPage(1);
     }, [debouncedSearch, selectedCategory, sort]);
-
+ 
     useEffect(() => {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
         if (!SpeechRecognition) {
@@ -82,7 +87,10 @@ const HomePage: React.FC = () => {
         const rec = new SpeechRecognition();
         rec.lang = "en-US";
         rec.continuous = false;
-        rec.onstart = () => setListening(true);
+        rec.onstart = () => {
+            setListening(true);
+            setSearchSource('voice'); // <-- setSearchSource IS USED HERE
+        }
         rec.onend = () => setListening(false);
         rec.onerror = (e: any) => console.error("Speech recognition error:", e.error);
         rec.onresult = (e: any) => {
@@ -91,7 +99,7 @@ const HomePage: React.FC = () => {
         };
         recognitionRef.current = rec;
         setMicSupported(true);
-
+ 
         return () => {
             try {
                 rec.abort();
@@ -100,7 +108,7 @@ const HomePage: React.FC = () => {
             }
         };
     }, []);
-
+ 
     const toggleMic = () => {
         if (!recognitionRef.current) return;
         if (listening) {
@@ -113,18 +121,23 @@ const HomePage: React.FC = () => {
             }
         }
     };
-
+ 
     const handleCategorySelect = (category: string) => {
         setSelectedCategory(cat => (cat === category ? "" : category));
         document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
     };
-    
+ 
+    const handleSearchChange = (value: string) => {
+        setSearch(value);
+        setSearchSource('text'); // <-- setSearchSource IS USED HERE
+    }
+   
     const clearFilters = () => {
         setSearch("");
         setSelectedCategory("");
         setSort("id");
     };
-
+ 
     return (
         <>
             <Slider />
@@ -133,7 +146,7 @@ const HomePage: React.FC = () => {
                 <h2 className="text-3xl font-bold text-center mb-8 dark:text-white">Our Products</h2>
                 <ProductFilters
                     search={search}
-                    setSearch={setSearch}
+                    setSearch={handleSearchChange}
                     toggleMic={toggleMic}
                     listening={listening}
                     micSupported={micSupported}
@@ -168,5 +181,6 @@ const HomePage: React.FC = () => {
         </>
     );
 };
-
+ 
 export default HomePage;
+ 
