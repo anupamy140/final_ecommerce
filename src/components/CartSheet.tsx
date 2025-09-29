@@ -7,6 +7,7 @@ import { ImageWithLoader } from "../components/shared/ImageWithLoader";
 import { optimizeImage } from "../lib/image";
 import { useNavigate } from "react-router-dom";
 import { Plus, Minus, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion'; // --- 1. IMPORT framer-motion ---
 
 export const CartSheet = () => {
     const { 
@@ -68,7 +69,21 @@ export const CartSheet = () => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center border dark:border-gray-700 rounded-md">
                                             <button onClick={() => changeQty(it.product_id, it.quantity - 1)} className="px-2 py-1 text-gray-600 dark:text-gray-300 disabled:opacity-50" disabled={it.quantity <= 1}><Minus size={16} /></button>
-                                            <span className="px-3 py-1 font-semibold text-sm">{it.quantity}</span>
+                                            
+                                            {/* --- 2. WRAP QUANTITY WITH ANIMATION COMPONENTS --- */}
+                                            <AnimatePresence mode="wait" initial={false}>
+                                                <motion.span
+                                                    key={it.quantity} // The key tells AnimatePresence to re-render when quantity changes
+                                                    initial={{ y: 10, opacity: 0 }}
+                                                    animate={{ y: 0, opacity: 1 }}
+                                                    exit={{ y: -10, opacity: 0 }}
+                                                    transition={{ duration: 0.2 }}
+                                                    className="px-3 py-1 font-semibold text-sm w-10 text-center" // Added width and text-center
+                                                >
+                                                    {it.quantity}
+                                                </motion.span>
+                                            </AnimatePresence>
+                                            
                                             <button onClick={() => changeQty(it.product_id, it.quantity + 1)} className="px-2 py-1 text-gray-600 dark:text-gray-300"><Plus size={16} /></button>
                                         </div>
                                         <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-500 hover:bg-red-500/10" onClick={() => removeFromCart(it.product_id)}>

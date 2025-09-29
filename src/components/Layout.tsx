@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import {CartSheet} from './CartSheet';
 import WishlistSheet from './WishlistSheet';
 import UserAuthDialog from './UserAuthDialog';
+import BackToTopButton from './ui/BackToTopButton';
 
 const Layout = () => {
   return (
@@ -11,6 +12,7 @@ const Layout = () => {
       <UserAuthDialog />
       <CartSheet />
       <WishlistSheet />
+      <BackToTopButton />
     </div>
   );
 };

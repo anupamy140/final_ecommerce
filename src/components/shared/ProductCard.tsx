@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Eye } from "lucide-react"; // Import Eye icon
 import type { Product } from "../../types/index";
 import { useApp } from "../../contexts/AppContext";
 import { ImageWithLoader } from "./ImageWithLoader";
 import Button  from "../ui/Button";
-import { optimizeImage } from "../../lib/image"; // Helper function ko import kiya gaya hai
+import { optimizeImage } from "../../lib/image";
 
-export const ProductCard = ({ product }: { product: Product; }) => {
+// Add onQuickView prop to the component
+export const ProductCard = ({ product, onQuickView }: { product: Product; onQuickView: (id: number) => void; }) => {
     const { formatPrice, addToCart, toggleWishlist, wishlist } = useApp();
     const isInWishlist = wishlist.some((item: Product) => item.id === product.id);
 
@@ -18,15 +19,25 @@ export const ProductCard = ({ product }: { product: Product; }) => {
                         src={optimizeImage(product.images[0], 400, 500)}
                         alt={product.title}
                         className="w-full h-full rounded-xl transition-transform duration-300 group-hover:scale-110"
-                        loading="lazy" // Lazy loading add kar di gayi hai
+                        loading="lazy"
                     />
                 </Link>
-                <button 
-                    onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }} 
-                    className="absolute top-2 right-2 bg-white/70 dark:bg-gray-950/70 backdrop-blur-sm p-2 rounded-full text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors"
-                >
-                    <Heart className={`h-5 w-5 ${isInWishlist ? 'text-red-500 fill-current' : ''}`} />
-                </button>
+                <div className="absolute top-2 right-2 flex flex-col gap-2">
+                     <button 
+                        onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }} 
+                        className="bg-white/70 dark:bg-gray-950/70 backdrop-blur-sm p-2 rounded-full text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors"
+                        aria-label="Toggle Wishlist"
+                    >
+                        <Heart className={`h-5 w-5 ${isInWishlist ? 'text-red-500 fill-current' : ''}`} />
+                    </button>
+                    <button 
+                        onClick={(e) => { e.stopPropagation(); onQuickView(product.id); }} 
+                        className="bg-white/70 dark:bg-gray-950/70 backdrop-blur-sm p-2 rounded-full text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors opacity-0 group-hover:opacity-100"
+                        aria-label="Quick View"
+                    >
+                        <Eye className="h-5 w-5" />
+                    </button>
+                </div>
             </div>
             <div className="flex-1 mb-4">
                 <Link to={`/product/${product.id}`}>

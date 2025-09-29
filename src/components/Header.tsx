@@ -1,20 +1,32 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../contexts/AppContext';
 import Button from './ui/Button';
 import { ShoppingCart, Heart, Sun, Moon, User, Package, LogOut, Menu } from 'lucide-react';
 import api from '../api/userApi';
+import { cn } from '../lib/utils';
 
 const Header = () => {
     const { user, cart, wishlist, setUserAuthModalOpen, setCartOpen, setWishlistOpen, theme, setTheme } = useApp();
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-    const navLinks = ["Catalogue", "Fashion", "Favourite", "Lifestyle"];
+    
+    // --- CHANGES START HERE ---
+    const navLinks = [
+        { text: "Catalogue", to: "/catalogue" },
+        { text: "Fashion", to: "/fashion" },
+        { text: "Favourite", to: "/favourite" },
+        { text: "Lifestyle", to: "/lifestyle" }
+    ];
 
     const toggleTheme = () => {
         setTheme(theme === 'light' ? 'dark' : 'light');
     };
+
+    const linkClasses = "text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors";
+    const activeLinkClasses = "text-black dark:text-white font-semibold";
+    // --- CHANGES END HERE ---
 
     return (
         <header className="bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg shadow-sm sticky top-0 z-40">
@@ -22,7 +34,17 @@ const Header = () => {
                 <div className="flex justify-between items-center h-20">
                     <Link to="/" className="text-2xl font-bold tracking-wider text-gray-900 dark:text-white">BRO😎MART </Link>
                     <nav className="hidden md:flex items-center space-x-8">
-                        {navLinks.map(link => (<a key={link} href="#" className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">{link}</a>))}
+                        {/* --- CHANGES START HERE --- */}
+                        {navLinks.map(link => (
+                            <NavLink 
+                                key={link.to} 
+                                to={link.to}
+                                className={({ isActive }) => cn(linkClasses, isActive && activeLinkClasses)}
+                            >
+                                {link.text}
+                            </NavLink>
+                        ))}
+                        {/* --- CHANGES END HERE --- */}
                         <Link to="/vendor/auth" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
                             Vendor Portal
                         </Link>
@@ -65,7 +87,18 @@ const Header = () => {
                 {menuOpen && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="md:hidden bg-white dark:bg-gray-950 overflow-hidden">
                         <div className="py-4 px-4 space-y-2 border-t dark:border-gray-800">
-                            {navLinks.map(link => (<a key={link} href="#" className="block text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white rounded-md px-3 py-2">{link}</a>))}
+                            {/* --- CHANGES START HERE --- */}
+                            {navLinks.map(link => (
+                                <NavLink 
+                                    key={link.to} 
+                                    to={link.to} 
+                                    onClick={() => setMenuOpen(false)}
+                                    className={({ isActive }) => cn("block rounded-md px-3 py-2", linkClasses, isActive && activeLinkClasses)}
+                                >
+                                    {link.text}
+                                </NavLink>
+                            ))}
+                            {/* --- CHANGES END HERE --- */}
                             <Link to="/vendor/auth" className="block text-blue-600 dark:text-blue-400 hover:underline rounded-md px-3 py-2">Vendor Portal</Link>
                             {!user && <Button onClick={() => { setUserAuthModalOpen(true); setMenuOpen(false); }} className="w-full mt-2">Login / Sign Up</Button>}
                         </div>

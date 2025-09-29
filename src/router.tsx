@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ComponentType } from 'react'; // <-- THE FIX IS HERE
+import { Suspense, lazy, type ComponentType } from 'react';
 import { createHashRouter } from 'react-router-dom';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
@@ -19,6 +19,10 @@ const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
 const OrdersPage = lazy(() => import('./pages/profile/OrdersPage'));
 const AddressManagementPage = lazy(() => import('./pages/profile/AddressManagementPage'));
 const SettingsPage = lazy(() => import('./pages/profile/SettingsPage'));
+const CataloguePage = lazy(() => import('./pages/CataloguePage'));
+const FashionPage = lazy(() => import('./pages/FashionPage'));
+const FavouritePage = lazy(() => import('./pages/FavouritePage'));
+const LifestylePage = lazy(() => import('./pages/LifestylePage'));
 
 const withSuspense = (Component: ComponentType) => (
   <Suspense fallback={<LoadingSpinner />}>
@@ -36,6 +40,10 @@ const router = createHashRouter([
                 children: [
                     { index: true, element: withSuspense(HomePage) },
                     { path: "product/:productId", element: withSuspense(ProductDetailPage) },
+                    { path: "catalogue", element: withSuspense(CataloguePage) },
+                    { path: "fashion", element: withSuspense(FashionPage) },
+                    { path: "favourite", element: withSuspense(FavouritePage) },
+                    { path: "lifestyle", element: withSuspense(LifestylePage) },
                     {
                         path: "profile",
                         element: <ProfileLayout />,

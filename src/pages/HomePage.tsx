@@ -12,6 +12,7 @@ import BrandLogos from '../components/home/BrandLogos';
 import type { Product } from '../types';
 import { SearchX } from 'lucide-react';
 import Button from '../components/ui/Button';
+import QuickViewModal from '../components/shared/QuickViewModal'; // Import the new modal
  
 const API_BASE = import.meta.env.VITE_API_BASE;
  
@@ -29,6 +30,7 @@ const HomePage: React.FC = () => {
     const recognitionRef = useRef<any>(null);
     const [micSupported, setMicSupported] = useState(false);
     const [listening, setListening] = useState(false);
+    const [quickViewProductId, setQuickViewProductId] = useState<number | null>(null);
  
     const loadProducts = useCallback(async () => {
         setLoading(true);
@@ -89,7 +91,7 @@ const HomePage: React.FC = () => {
         rec.continuous = false;
         rec.onstart = () => {
             setListening(true);
-            setSearchSource('voice'); // <-- setSearchSource IS USED HERE
+            setSearchSource('voice');
         }
         rec.onend = () => setListening(false);
         rec.onerror = (e: any) => console.error("Speech recognition error:", e.error);
@@ -129,7 +131,7 @@ const HomePage: React.FC = () => {
  
     const handleSearchChange = (value: string) => {
         setSearch(value);
-        setSearchSource('text'); // <-- setSearchSource IS USED HERE
+        setSearchSource('text');
     }
    
     const clearFilters = () => {
@@ -169,7 +171,7 @@ const HomePage: React.FC = () => {
                         ) : (
                             products.map(p => (
                                 <motion.div layout key={p.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                                    <ProductCard product={p} />
+                                    <ProductCard product={p} onQuickView={setQuickViewProductId} />
                                 </motion.div>
                             ))
                         )}
@@ -178,9 +180,16 @@ const HomePage: React.FC = () => {
                 {!loading && pages > 1 && <Pagination page={page} pages={pages} onPageChange={setPage} />}
             </div>
             <BrandLogos />
+
+            {quickViewProductId && (
+                <QuickViewModal
+                    productId={quickViewProductId}
+                    isOpen={!!quickViewProductId}
+                    onClose={() => setQuickViewProductId(null)}
+                />
+            )}
         </>
     );
 };
  
 export default HomePage;
- 
